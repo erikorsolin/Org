@@ -22,3 +22,6 @@
 	add $s1, $t1, $t3   # o registrador $s1 recebe a subtração dos conteúdos dos registradores $t2 e $t3   (D - A + E), logo $s1 deve ter o valor -30
 	sw  $s1, C  	    # gravando o resultado na variável C
 	
+	li $v0, 1
+    	lw $a0, C
+    	syscall

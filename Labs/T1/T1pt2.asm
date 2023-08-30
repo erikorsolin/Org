@@ -24,7 +24,8 @@
     add  $s1, $t1, $t3 # $s1 recebe a subtração dos conteúdos dos registradores $t1 e $t3 (D - A + E), $s1 deve ter o valor -30
 
     sw   $s1, C       # Gravando o resultado na variável C
-
-    # Terminando o programa
-    li   $v0, 10      # Código do syscall para sair do programa
+    
+    li $v0, 1
+    lw $a0, C
     syscall
+    
