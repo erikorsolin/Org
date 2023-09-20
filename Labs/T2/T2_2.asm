@@ -113,13 +113,14 @@
 			
 			bgez $t5, maior_igual_zero # se o número a ser escrito for positivo vai pro label
 			
-			la $t9, Negativo
-			addi $t9, $t9, 2
-			
+			la $t9, Negativo  # lendo endereço do caracter menos
+			addi $t9, $t9, 2  # somando 2 (em byte) ao endereço do caracter
+			# Isso está sendo feito pois no endereço original estava sendo gravado dois caracteres NULL (/00) antes do caracter menos	
+					
 			li $v0, 15     # código syscall para escrita em arquivo
 			move $a0, $s6  # descritor em $a0
 			move $a1, $t9  # endereço do caracter de sinal
-			li $a2, 1    # quantidade de caracteres
+			li $a2, 1      # quantidade de caracteres
 			syscall
 			abs $t5, $t5
 			
