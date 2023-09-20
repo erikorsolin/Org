@@ -1,11 +1,23 @@
 .data
 	.align 2
 	A: .word 1 2 3 0 1 4 0 0 1
+	
 	.align 2
 	B: .word 1 -2 5 0 1 -4 0 0 1
+	
 	.align 2
-	C:  .space 36
-	CaminhoArquivo: .asciiz "/home/erik/Documentos/teste.txt" 
+	C:  .word 0 0 0 0 0 0 0 0 0
+	
+	String: .asciiz "0"
+	
+	Negativo: .asciiz "-"
+	
+	Espaco: .asciiz " "
+	
+	quebra_linha: .asciiz " \n"
+	
+	CaminhoArquivo: .asciiz "/home/erik/Documentos/matriz.txt"
+
 .text
 
 	la $s0, A  # carregado o endereço base da matriz A
@@ -49,7 +61,13 @@
 	           # Multiplicações #
 	##############################################
 
-
+	li $v0, 13      # código syscall para abrir arquivo
+	la $a0, CaminhoArquivo
+	li $a1, 1       # abrir para escrita
+	syscall
+	
+	move $s6, $v0   # descritor salvo em $s6
+	
 	loop_linha:
 	beq $t2, 3, fim_loop_linha # permacene no loop linha enquanto $t2 for menor do que 3
 		move $t3, $zero    # reinicia o contador de colunas
@@ -92,41 +110,70 @@
 			mul $t8, $t3, 4    # $t8 = coluna * 4 (calculando o deslocamento de colunas)
 			add $t7, $t7, $t8  # # $t7 = $t7 + coluna * 4
 			add $t7, $t7, $s2  # $t7 = $t7 + endereço base da matriz C
-			sw  $t5, 0($t7)    # escrevendo o resultado C[i][j] na matriz C
 			
+			bgez $t5, maior_igual_zero # se o número a ser escrito for positivo vai pro label
+			
+			li $v0, 15     # código syscall para escrita em arquivo
+			move $a0, $s6  # descritor em $a0
+			la $a1, Negativo  # endereço do caracter de sinal
+			li $a2, 1    # quantidade de caracteres
+			syscall
+			abs $t5, $t5
+			
+			j calculo
+			
+			maior_igual_zero:
+			li $v0, 15      # código syscall para escrita em arquivo
+			move $a0, $s6   # descritor em $a0
+			la $a1, Espaco  # endereço do caracter de sinal
+			li $a2, 1       # quantidade de caracteres
+			syscall
+			
+			calculo:
+			div $t0, $t5, 10  # parte da dezena vai para $t0  
+			mfhi $t1	  # parte da unidade vai para $t1
+			
+			addi $t0, $t0, 48  # convertendo a dezena para sua representação em ASCII
+			sw $t0, String    # gravando o valor na String
+			
+			li $v0, 15      # código syscall para escrita em arquivo
+			move $a0, $s6   # descritor em $a0
+			la $a1, String  # endereço da String
+			li $a2, 1       # quantidade de caracteres
+			syscall
+			
+			addi $t1, $t1, 48    # convertendo a unidade para sua representação ASCII
+			sw $t1, String  # gravando o valor unidade na String
+			
+			li $v0, 15      # código syscall para escrita em arquivo
+			move $a0, $s6   # descritor em $a0
+			la $a1, String  # endereço da String
+			li $a2, 1       # quantidade de caracteres
+			syscall
+			
+			li   $v0, 15       # Comando para escrita
+			move $a0, $s6      # Identificador do arquivo 
+			la   $a1, Espaco   # Carrega " "
+			li   $a2, 1        # Um caracter
+			syscall    
+			
+			sw  $t5, 0($t7)    # escrevendo o resultado C[i][j] na matriz C
 			
 		addi $t3, $t3, 1 # $t3 += 1
 		j loop_coluna	
 		fim_loop_coluna:
 		
+		li $v0, 15            # código syscall para escrita em arquivo
+		move $a0, $s6         # descritor em $a0
+		la $a1, quebra_linha  # endereço de quebra_linha
+		li $a2, 3             # quantidade de caracteres
+		syscall
+		
 	addi $t2, $t2, 1 # $t2 += 1
 	j loop_linha
-	fim_loop_linha: 
-
+	fim_loop_linha:
 	
+	li   $v0, 16       # fechando arquivo
+	move $a0, $s6      
+	syscall            
 	
-	
-	##############################################
-	           # Escrita em Arquivo #
-	##############################################
-	
-	# Abrir arquivo
-	li $v0, 13 
-	la $a0, CaminhoArquivo
-	li $a1, 1   # modo escrita
-	syscall     # descritor do arquivo está em $v0
-	
-	
-	move $s0, $v0 # agora o descritor está salvo em $s0
-	
-	
-	# Escrevendo a matriz no arquivo
-	li $v0, 15
-	move $a0, $s0
-	la $a1, C
-	li, $a2, 36
-	syscall 
-	
-	# Fechar o arquivos
-	li $v0, 16
-	move $a0, $s0
