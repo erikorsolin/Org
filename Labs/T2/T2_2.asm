@@ -10,11 +10,11 @@
 	
 	String: .asciiz "0"
 	
-	Negativo: .asciiz "-"
+	Negativo: .asciiz "  -"
 	
 	Espaco: .asciiz " "
 	
-	quebra_linha: .asciiz " \n"
+	quebra_linha: .asciiz "  \n"
 	
 	CaminhoArquivo: .asciiz "/home/erik/Documentos/matriz.txt"
 
@@ -116,7 +116,7 @@
 			li $v0, 15     # código syscall para escrita em arquivo
 			move $a0, $s6  # descritor em $a0
 			la $a1, Negativo  # endereço do caracter de sinal
-			li $a2, 1    # quantidade de caracteres
+			li $a2, 3    # quantidade de caracteres
 			syscall
 			abs $t5, $t5
 			
