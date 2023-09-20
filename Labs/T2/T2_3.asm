@@ -107,4 +107,5 @@
 		addi $t2, $t2, 1 # $t2 += 1
 		j loop_linha
 		fim_loop_linha: 
-		jr $ra
+
+		jr $ra # volta pra onde a função foi chamada
