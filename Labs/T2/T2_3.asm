@@ -11,6 +11,7 @@
 		jal PROC_TRANS
 		jal PROC_MUL
 		li $v0, 10 # informa que o programa main acabou
+		syscall
 	
 	
 	
@@ -106,3 +107,5 @@
 		addi $t2, $t2, 1 # $t2 += 1
 		j loop_linha
 		fim_loop_linha: 
+
+		jr $ra # volta pra onde a função foi chamada
