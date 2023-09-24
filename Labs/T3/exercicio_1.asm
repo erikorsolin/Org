@@ -1,9 +1,12 @@
 .data 
-	
-	X: .double 111                      # Parâmetro inicial em precisão dupla
-	Resultado: .double                  # Resultado da raiz quadrada aproximada
-	Estimativa: .double 1               # Estimativa inical em precisão dupla 
-	Dois: .double 2                     # Declarando zero com precisão dupla para futura divisão por dois
+	.align 3
+	X:          .double 2          # Parâmetro inicial em precisão dupla
+	.align 3
+	Resultado:  .double            # Resultado da raiz quadrada aproximada
+	.align 3
+	Estimativa: .double 1             # Estimativa inical em precisão dupla 
+	.align 3
+	Dois:       .double 2             # Declarando zero com precisão dupla para futura divisão por dois
 	
 			
 	
@@ -23,11 +26,11 @@
 	
 	
 	PROC_SQRT:
-		li $v0, 7                    # Carregando no registrador $v0 o código para ler double
-		syscall 		     # Após a chamada de sistema, o valor lido, por padrão, estará armazenado em $f0, logo n está em $f0
+		li $v0, 7                # Carregando no registrador $v0 o código para ler double
+		syscall 		         # Após a chamada de sistema, o valor lido, por padrão, estará armazenado em $f0, logo n está em $f0
 		cvt.w.d $f0, $f0	     # Convertedo de double para inteiro o valor armazenado em $f0 (n) 	
 		mfc1 $t1, $f0		     # Movendo n para o registrador $t1
-		move $t0, $zero		     # Inicializando $t0 com zero	
+		move $t0, $zero		     # Inicializando $t0 com zero		
 		
 		
 		loop_calculo:
@@ -41,7 +44,7 @@
 			sqrt.d $f12, $f2     # Para comparação
 			
 		
-		addi $t0, $t0, 1             # Incrementando 1 no acumulador do loop
+		addi $t0, $t0, 1         # Incrementando 1 no acumulador do loop
 		j loop_calculo		    
 		fim_calculo:
 			jr $ra               # volta para onde a função foi chamada
