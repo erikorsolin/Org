@@ -1,6 +1,7 @@
 .data	
 	.align 3
-	X:         .double  5	                # Parâmetro que será calculado o seno
+	X:         .double  5
+		                # Parâmetro que será calculado o seno
 	
 	.align 3
 	Resultado: .double  	 	        # Resultado na memória de dados
@@ -15,8 +16,6 @@
 	.align 3
 	Zero:    .double 0
 	
-	.align 3
-	Const2:    .double 2
 	
 	.align 3
 	Negativo:  .double -1
@@ -56,12 +55,12 @@
 	Potencia:
 		l.d $f0, X            		 # Carregando o valor de parâmetro no registrador $f0
 		mov.d $f10, $f4                  # Agora o valor 2n+1 está armazenado em $f8 (isso foi feito para não alterar o conteúdo de $f4, que será usado em outro procedimento
-			
+		mov.d $f8, $f0			 # Salvando X no registrador $f8 para calcular a potencia ($f8 ja pode ser usado nesse contexto)
 		loop_potencia:
-			c.le.d $f10, $f2         # Faz o loop 2n+1 vezes para calcular a potencia
+			c.eq.d  $f10, $f2        # Faz o loop 2n+1 vezes para calcular a potencia
 			bc1t  end_loopp		 # Se verdadeiro, sair do loop
 				
-			mul.d $f0, $f0, $f0      # faz x = x*x
+			mul.d $f0, $f0, $f8      # faz x = x*t
 			
 			sub.d $f10, $f10, $f2    # Decrementa $f10 por 1
 		j loop_potencia			 # Resultdo está em $f0
@@ -69,26 +68,25 @@
 		end_loopp:
 		jr $ra
 			
-				
-		
+			
+
 		
 		
 		Sinal:
-		l.d $f16, Const2    # $f16 tem 2
-		l.d $f24, Zero      # contém zero
-		l.d $f26, Negativo  # por default, o sinal é negativo
+		l.d $f16, Negativo  # $f16 também contém -1
+		l.d $f24, Zero      # contém zero 
+		l.d $f26, Const # Inicialmente, o sinal é positivo
+		loop_sinal:
+			c.eq.d $f24, $f14   # faz o loop n vezes
+			bc1t fim_p
+			
+			mul.d $f26, $f26, $f16  # Resultado está em $f26
+			   
+			add.d $f24, $f24, $f2  # Incrementa 1 no contador 
+		j loop_sinal
 		
-		div.d $f18, $f14, $f16    # n / 2
-		mul.d $f20, $f18, $f16    # multiplicando o resultado da divisão por 2
-		sub.d $f22, $f20, $f14    # subtraindo o resultado da multiplicação de n (se for igual a zero, é par)
-		
-		c.eq.d $f22, $f24
-		bc1t positivo
-		positivo:
-		mul.d $f26, $f26, $f26    # -1*-1 = 1 Resultado armazenado em $f26
+		fim_p:
 		jr $ra
-		
-		
 		
 		
 		
@@ -124,5 +122,3 @@
 	         	
 	         	end_looppp:
 	         	    jr $t9
-	         		
-	     
