@@ -7,8 +7,6 @@
 	prompt5: .asciiz "Média de B: "
 	newline: .asciiz "\n"
 	Const:   .word 0
-	SomaA:   .float
-	SomaB:   .float
 
 .text
 
@@ -34,7 +32,8 @@
     		
     			
     	Vetor_A:
-    	
+    		
+    		move $t8, $ra
     		li $v0, 4			# Imprime o prompt2
     		la $a0, prompt2
     		syscall
@@ -54,27 +53,26 @@
     			syscall
     			
     			mov.s $f1, $f0         # Float digitado está em $f1
-    			add.s $f2, $f2, $f1
-    			
-    			s.s $f2, SomaA
+    			jal SomaA
+    			#add.s $f2, $f2, $f1    # Somando os elementos do vetor A       
     			
     			
     			add $t1, $t1, 1         # Incrementndo em 1 o contador
     			j loop_A
  
     		fim_loop_A:
-    			jr $ra
+    			jr $t8
     		
     		
     		
     		
     	Vetor_B:
+    		move $t9, $ra
     		li $v0, 4			# Imprime o prompt3
     		la $a0, prompt3
     		syscall
     		li $t1, 0                       # Inicializa $t1 com 0
-    		l.s $f4, Const
-    	
+    		l.s $f4, Const	
     		
  		loop_B:
  		beq $t1, $t0, fim_loop_B        # loop para receber o vetor B
@@ -87,27 +85,35 @@
     			syscall
  			
  			mov.s $f3, $f0         # Float lido está em $f3
- 			add.s $f4, $f4, $f3    # Somando os elementos do vtor B
  			
- 			s.s $f4, SomaB
+ 			jal SomaB
+ 			#add.s $f4, $f4, $f3    # Somando os elementos do vtor B
 					
     			add $t1, $t1, 1         # Incrementndo em 4 o contador
     			
  			j loop_B
  			
  		fim_loop_B:
- 			jr $ra
-    	
-    		
+ 			jr $t9
 			
   	
-    	Media:
-    		
-    		l.s $f5, SomaA
-    		l.s $f6, SomaB
-    		div.s $f7, $f5, $f1
-    		div.s $f8, $f6, $f1
+  	
+  	SomaA:
+  	add.s $f2, $f2, $f1    # Somando os elementos do vetor A
   
+  	jr $ra
+  	
+  	
+  	SomaB:
+  	add.s $f4, $f4, $f3    # Somando os elementos do vtor B
+  	
+  	jr $ra
+  	
+  	
+    	Media:	
+    	
+    		div.s $f5, $f2, $f10    # Media A
+    		div.s $f6, $f4, $f10    # Media B
     		
     		
     		
@@ -120,7 +126,7 @@
     		syscall
     					# Imprimindo A
     		li $v0, 2
-    		mov.s $f12, $f7
+    		mov.s $f12, $f5
     		syscall
     		
     	
@@ -133,9 +139,8 @@
     		syscall
     					# Imprimindo B
     		li $v0, 2
-    		mov.s $f12, $f8
+    		mov.s $f12, $f6
     		syscall
-    	
     	
     	
     		jr $ra
